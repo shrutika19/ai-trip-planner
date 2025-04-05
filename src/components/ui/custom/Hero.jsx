@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from '../button'
+import { Link } from 'react-router-dom'
 
 function Hero() {
     return (
@@ -11,7 +12,9 @@ function Hero() {
                 Your intelligent travel assistant — crafting personalized itineraries that match your interests, style, and budget, while saving you hours of planning. Whether you're dreaming of hidden gems,
                 foodie adventures, or cultural deep-dives, we bring your perfect trip to life — effortlessly.
             </p>
-            <Button>Get Started – It’s Free</Button>
+            <Link to={'/create-trip'}>
+                <Button>Get Started – It’s Free</Button>
+            </Link>
         </div>
 
     )
