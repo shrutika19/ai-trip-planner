@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SelectBudgetOptions, SelectTravelList } from '@/constants/options'
+import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from '@/constants/options'
+import { chatSession } from '@/service/AIModel'
 import React, { useEffect, useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import { toast } from 'sonner'
 
 function CreateTrip() {
     const apiKey = import.meta.env.VITE_GOOGLE_PLACE_API_KEY
@@ -20,10 +22,28 @@ function CreateTrip() {
         console.log(formData)
     }, [formData])
 
-    const onGeneratetrip = () => {
-        if (formData?.noOfDays > 5)
+    const onGeneratetrip = async () => {
+        if (formData?.noOfDays > 5 && !formData?.location || !formData?.noOfDays || !formData?.budget || !formData?.travelPlan) {
+            toast.custom((t) => (
+                <div
+                    className="bg-red-600 text-white px-4 py-2 rounded shadow-md flex items-center gap-2"
+                    onClick={() => toast.dismiss(t)}
+                >
+                    All fields are required
+                </div>
+            ));
             return;
-        console.log("formdata", formData)
+        }
+        const FINAL_PROMPT = AI_PROMPT
+            .replace('{location}', formData?.location?.label)
+            .replace('{noOfDays}', formData?.noOfDays)
+            .replace('{travelPlan}', formData?.travelPlan)
+            .replace('{budget}', formData?.budget)
+            .replace('{totaldays}', formData?.noOfDays)
+
+        console.log("FINAL_PROMPT", FINAL_PROMPT)
+        const result = await chatSession.sendMessage(FINAL_PROMPT)
+        console.log("result", result?.response?.text());
     }
 
     return (
