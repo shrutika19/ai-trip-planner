@@ -5,11 +5,24 @@ import { chatSession } from '@/service/AIModel'
 import React, { useEffect, useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import { toast } from 'sonner'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from '@react-oauth/google'
+import axios from 'axios'
+
 
 function CreateTrip() {
     const apiKey = import.meta.env.VITE_GOOGLE_PLACE_API_KEY
     const [place, setPlace] = useState()
     const [formData, setformData] = useState([])
+    const [openDialog, setOpenDialog] = useState(false)
 
     const handleInputChange = (name, value) => {
         setformData({
@@ -18,11 +31,32 @@ function CreateTrip() {
         })
     }
 
-    useEffect(() => {
-        console.log(formData)
-    }, [formData])
+    const handleSignIn = useGoogleLogin({
+        onSuccess: (res) => GetUserPofile(res),
+        onError: (error) => console.log(error)
+    })
+
+    const GetUserPofile = (token) => {
+        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token?.access_token}`, {
+            headers: {
+                Authorization: `Bearer ${token?.access_token}`,
+                Accept: 'Application/json'
+            }
+        }).then((response) => {
+            console.log(response);
+            localStorage.setItem('user', JSON.stringify(response.data));
+            setOpenDialog(false);
+            onGeneratetrip();
+        })
+    }
 
     const onGeneratetrip = async () => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            setOpenDialog(true)
+            return;
+        }
+
         if (formData?.noOfDays > 5 && !formData?.location || !formData?.noOfDays || !formData?.budget || !formData?.travelPlan) {
             toast.custom((t) => (
                 <div
@@ -116,6 +150,26 @@ function CreateTrip() {
                 <div className="my-10 justify-center flex">
                     <Button onClick={onGeneratetrip}>Generate Trip</Button>
                 </div>
+
+                <Dialog open={openDialog}>
+                    <DialogContent className="rounded-xl p-6 max-w-md text-center">
+                        <DialogHeader>
+                            <div className="flex flex-col items-center gap-4">
+                                <img src="/logo.svg" alt="App Logo" className="w-16 h-16" />
+                                <h2 className="font-bold text-2xl text-gray-800">Sign In With Google</h2>
+                                <p className="text-gray-500 text-sm">
+                                    Sign in to the app with Google Authentication securely.
+                                </p>
+                                <Button
+                                    onClick={handleSignIn}
+                                    className="w-full mt-4 bg-black hover:bg-zinc-900 text-white flex items-center justify-center gap-3 text-base shadow-md">
+                                    <FcGoogle className="h-5 w-5" />
+                                    Sign In with Google
+                                </Button>
+                            </div>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );
