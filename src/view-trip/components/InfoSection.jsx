@@ -1,12 +1,37 @@
 import { Button } from '@/components/ui/button'
-import React from 'react'
+import { GetPlaceDetails } from '@/service/GlobalApi';
+import React, { useEffect, useState } from 'react'
 import { IoIosSend } from "react-icons/io";
 
+const PHOTO_REF_URL = 'https://places.googleapis.com/v1/{NAME}/media?maxHeightPx=1000&maxWidthPx=1000&key=' + import.meta.env.VITE_GOOGLE_PLACE_API_KEY
 
 function InfoSection({ trip }) {
+
+    const [photoUrl, setPhotoUrl] = useState();
+
+    useEffect(() => {
+        trip && GetPlacePhoto();
+    }, [trip])
+
+    const GetPlacePhoto = async () => {
+        const data = {
+            textQuery: trip?.userSelection?.location?.label
+        };
+
+        try {
+            const res = await GetPlaceDetails(data);
+            // Do something with res.data if needed
+            const PhotoUrl = PHOTO_REF_URL.replace('{NAME}', res.data.places[0].photos[3].name);
+            setPhotoUrl(PhotoUrl)
+        } catch (error) {
+            console.error("Place API Error:", error); // Full AxiosError with .response, .message, etc.
+        }
+    };
+
+
     return (
         <div>
-            <img src='/placeholder.jpg' className='h-[340px] w-full object-cover rounded-xl' />
+            <img src={photoUrl} className='h-[340px] w-full object-cover rounded-xl' />
             <div className='flex justify-between items-center'>
                 <div className='my-5 flex flex-col gap-2'>
                     <h2 className='font-bold text-2xl'>
