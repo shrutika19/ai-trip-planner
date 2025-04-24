@@ -50,5 +50,9 @@ export const SelectTravelList = [
     },
 ];
 
+export const PHOTO_REF_URL =
+    "https://places.googleapis.com/v1/{NAME}/media?maxHeightPx=1000&maxWidthPx=1000&key=" +
+    import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
+
 export const AI_PROMPT =
     "Generate a travel plan for the location: {location}, for {noOfDays} days for a {travelPlan} with a {budget} budget. Provide a list of hotel options including the hotel name, address, price, image URL, geo-coordinates, rating, and a short description. Also, suggest a {totaldays}-day itinerary with details for each place, including the place name, description, image URL, geo-coordinates, ticket pricing, travel time between locations, and the best time to visit. Format the output in proper JSON";
