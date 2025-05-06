@@ -18,9 +18,10 @@ function MyTrips() {
             navigate('/')
             return;
         }
-        setUserTrips([])
         const q = query(collection(db, 'Aitrips'), where('userEmail', '==', user?.email))
         const querySnapshot = await getDocs(q);
+        setUserTrips([])
+
         querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             console.log(doc.id, " => ", doc.data());
@@ -34,9 +35,14 @@ function MyTrips() {
             <h2 className="font-bold text-3xl">My Trips</h2>
             <div className='grid grid-cols-2 mt-10 md:grid-cols-3 gap-5'>
                 {
-                    userTrips.map((trip, index) => (
-                        <MyTripsCardItem trip={trip} />
-                    ))
+                    userTrips?.length > 0 ? userTrips.map((trip, index) => (
+                        <MyTripsCardItem trip={trip} key={index} />
+                    )) :
+                        [1, 2, 3, 4, 5, 6].map((item, index) => (
+                            <div key={index} className='h-[220px] w-full bg-slate-200 animate-pulse rounded-xl'>
+
+                            </div>
+                        ))
                 }
             </div>
         </div>
