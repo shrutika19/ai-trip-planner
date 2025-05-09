@@ -17,6 +17,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
+import { Link } from 'react-router-dom';
 
 
 function Header() {
@@ -50,12 +51,12 @@ function Header() {
                 {
                     user ?
                         <div className='flex items-center gap-3'>
-                            <a href="/create-trip">
+                            <Link to="/create-trip">
                                 <Button variant="outline" className="rounded-full">Add Trips</Button>
-                            </a>
-                            <a href="/my-trips">
+                            </Link>
+                            <Link to="/my-trips">
                                 <Button variant="outline" className="rounded-full">My Trips</Button>
-                            </a>
+                            </Link>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <img src={user?.picture} className='cursor-pointer h-[35px] w-[35px] rounded-full' />
